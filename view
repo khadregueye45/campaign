@@ -21,7 +21,7 @@
 			$retour = "";
 			if(isset($_POST['form_ok']) && $_POST['form_ok'] == 'ok'){ 
 				if(!empty($_POST['title'])&&!empty($_POST['message'])&&!empty($_POST['notification_type'])) {  
-								                          // si le titre, le message et le type notifications ne sont pas non vides
+						  // si le titre, le message et le type notifications ne sont pas non vides
 					$notification_type = htmlspecialchars(stripcslashes($_POST['notification_type']));
 					$title = htmlspecialchars(stripcslashes($_POST['title']));
 					$client_type = htmlspecialchars(stripcslashes($_POST['custom_type']));
@@ -58,7 +58,7 @@
 				}
 				else{  
 						 $message ="Les champs en * doivent être renseignés";
-					}
+				     }
 			}
 		?>
 	</head>
