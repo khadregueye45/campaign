@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html> 
+	<head>
+		<title>Campagne de notification</title>  
+		<meta http-equiv="Content-Type" content="text/html" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<link rel="shortcut icon" href="favicon.ico" >
+		<link rel="stylesheet" href="css/pietervanos.css" />
+		<link rel="stylesheet" href="css/pietervanos.min.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		<link rel="stylesheet" href="ckeditor/samples/css/samples.css">
+		<link rel="stylesheet" href="ckeditor/samples/toolbarconfigurator/lib/codemirror/neo.css">
+		<link rel="stylesheet" href="https://code.jquery.com/mobile/1.3.1/jquery.mobile.structure-1.3.1.min.css" />
+		<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+		<script src="https://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+		<script src="ckeditor/ckeditor.js"></script>
+		<script src="ckeditor/samples/js/sample.js"></script>
+					
+		<?php
+			$retour = "";
+			if(isset($_POST['form_ok']) && $_POST['form_ok'] == 'ok'){ 
+				if(!empty($_POST['title'])&&!empty($_POST['message'])&&!empty($_POST['notification_type'])) {  
+								                          // si le titre, le message et le type notifications ne sont pas non vides
+					$notification_type = htmlspecialchars(stripcslashes($_POST['notification_type']));
+					$title = htmlspecialchars(stripcslashes($_POST['title']));
+					$client_type = htmlspecialchars(stripcslashes($_POST['custom_type']));
+					$msg = htmlspecialchars(stripcslashes($_POST['message']));
+								
+					switch($client_type){                
+						case 1:
+							$where = " WHERE solde > 0 ";
+							break;	
+						case 2:
+							$where = " WHERE solde <= 0 ";
+							break;	
+						default:
+							$where = "";
+							break;
+					}
+
+					include("conf.php");
+					include("controleur.PHP");
+					include("model.PHP");
+							
+					$model = new model();
+					$controleur = new controleur();
+					$registation_ids  = $model->get_registation_ids($connect_db , $where);
+					if ($notification_type=='1') { // si c'est une notification par mobile
+						if(count($registation_ids)){
+							$retour  = $controleur->send_mobile($registation_ids, $msg ,$title);
+						}
+					}
+					elseif($notification_type=='2'){ // si si c'est une notification par email
+							$retour  = $controleur->send_email($registation_ids, $msg ,$title );
+					} 
+					$message = $retour ? "Notification bien envoyée aux clients" : "Une erreur est apparue";
+				}
+				else{  
+						 $message ="Les champs en * doivent être renseignés";
+					}
+			}
+		?>
+	</head>
+	<body>
+		<!-- Formulaire d'envoi de notification -->
+		<div id="contactform" data-role="page" data-theme="a">
+			<?php
+				if (isset($message)) {
+					echo "<h1 style='background-color: ".($retour ? 'green' : 'red')."'>".$message."</h1>";
+				}
+			?>	
+			<div data-role="content" data-theme="a">
+				<form method="POST" action="" data-ajax="false" >
+					<!-- Type de la notification: -->
+					<select id="notification_type" name="notification_type" value="" placeholder="Type push" />
+						<option value="">Choisir le type de notification </option>
+						<option value="1">Notification par mobile</option>
+						<option value="2">Notification e-mail</option>
+					</select><font>*</font><br>
+					<!-- Titre de la notification: -->
+					<input type="text" id="title" name="title"  placeholder="Titre de la notification" required/><font>*</font><br>												  
+					<!-- Les clients à cibler:-->
+					<select id="custom_type" name="custom_type" value="" placeholder="Clients" />
+						<option value="" >Tous les clients</option>
+						<option value="1">Les clients actifs</option>
+						<option value="2">Les clients inactifs</option>
+					</select><br>
+					<!-- Le message à envoyer:<br>-->
+					<textarea  id="editor" name="message" placeholder="Saisir votre message ici..." required ></textarea><font>*</font> <br />
+					<input type="hidden" name="form_ok" value="ok"/>		
+					<input type="submit" value="Envoyer" name="submit" class="btn"/>
+				</form>
+			</div>
+		</div>	
+	</body>
+	<script>
+		initSample();
+	</script>
+</html>
