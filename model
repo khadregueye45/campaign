@@ -5,21 +5,21 @@
 			
 	    }
 	    public function get_registation_ids($connect_db , $where) {
-	    				/* c'est une methode qui permet de recuperer les adresses email des clients ciblés.
-							Elle retourne une liste sous forme de tableau. La requête se base sur le choix
-							des clients à cibler. 
-	    				*/
-				$sql = "SELECT c.client_email as email  
-				        FROM   clients c ".$where;
+	    		/* c'est une methode qui permet de recuperer les adresses email des clients ciblés.
+			   Elle retourne une liste sous forme de tableau. La requête se base sur le choix
+			   des clients à cibler. 
+	    	       */
+		$sql = "SELECT c.client_email as email  
+	        FROM   clients c ".$where;
 			
-				$req = mysqli_query($connect_db,$sql) or die('Erreur SQL !<br>'.$sql.'<br>'.mysqli_error());
-				$registation_ids = array(); 
-				while ( $row = mysqli_fetch_assoc($req) ){
-						if ($row['email']) {
-							array_push($registation_ids , $row['email'] );
-						}			
-					}
-	         return $registation_ids ;  
+		$req = mysqli_query($connect_db,$sql) or die('Erreur SQL !<br>'.$sql.'<br>'.mysqli_error());
+		$registation_ids = array(); 
+		while ( $row = mysqli_fetch_assoc($req) ){
+			if ($row['email']) {
+			    array_push($registation_ids , $row['email'] );
+		        }			
+		}
+	        return $registation_ids ;  
 	    }
 	} 
 ?>
